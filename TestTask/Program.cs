@@ -79,7 +79,7 @@ namespace TestTask
                     continue;
                 // TODO : заполнять статистику с использованием метода IncStatistic. Учёт букв - регистрозависимый.
                 if (letterDict.TryGetValue(c, out var letter))
-                    letter.Count++;
+                    IncStatistic(letter);
                 else
                     letterDict.Add(c, new LetterStats()
                     {
@@ -115,7 +115,7 @@ namespace TestTask
                 if (c == cPrev)
                 {
                     if (letterDict.TryGetValue(c, out var letter))
-                        letter.Count++;
+                        IncStatistic(letter);
                     else
                         letterDict.Add(c, new LetterStats()
                         {
@@ -173,6 +173,15 @@ namespace TestTask
             // TODO : Выводить на экран статистику. Выводить предварительно отсортировав по алфавиту!
             foreach(var ls in letters)
                 Console.WriteLine($"{ls.Letter} : {ls.Count}");
+        }
+
+        /// <summary>
+        /// Метод увеличивает счётчик вхождений по переданной структуре.
+        /// </summary>
+        /// <param name="letterStats"></param>
+        private static void IncStatistic(LetterStats letterStats)
+        {
+            letterStats.Count++;
         }
     }
 }
