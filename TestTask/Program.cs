@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -8,9 +9,6 @@ namespace TestTask
 {
     public class Program
     {
-        private static readonly HashSet<char> _consonantSet = new HashSet<char>("BCDFGHJKLMNPQRSTVWXYZbcdfghjklmnpqrstvwxyz");
-        private static readonly HashSet<char> _vowelSet = new HashSet<char>("AEIOUaeiou");
-
         /// <summary>
         /// Программа принимает на входе 2 пути до файлов.
         /// Анализирует в первом файле кол-во вхождений каждой буквы (регистрозависимо). Например А, б, Б, Г и т.д.
@@ -55,6 +53,16 @@ namespace TestTask
         }
 
         /// <summary>
+        /// Определяет является ли указанный симол английской буквой
+        /// </summary>
+        /// <param name="c"></param>
+        /// <returns></returns>
+        private static bool IsLetter(char c)
+        {
+            return Regex.IsMatch(c.ToString(), "[A-Za-z]");
+        }
+
+        /// <summary>
         /// Ф-ция считывающая из входящего потока все буквы, и возвращающая коллекцию статистик вхождения каждой буквы.
         /// Статистика РЕГИСТРОЗАВИСИМАЯ!
         /// </summary>
@@ -67,6 +75,8 @@ namespace TestTask
             while (!stream.IsEof)
             {
                 char c = stream.ReadNextChar();
+                if (!IsLetter(c))
+                    continue;
                 // TODO : заполнять статистику с использованием метода IncStatistic. Учёт букв - регистрозависимый.
                 if (letterDict.TryGetValue(c, out var letter))
                     letter.Count++;
@@ -96,6 +106,11 @@ namespace TestTask
             while (!stream.IsEof)
             {
                 char c = char.ToUpper(stream.ReadNextChar());
+                if (!IsLetter(c))
+                {
+                    cPrev = null;
+                    continue;
+                }
                 // TODO : заполнять статистику с использованием метода IncStatistic. Учёт букв - НЕ регистрозависимый.
                 if (c == cPrev)
                 {
@@ -127,21 +142,15 @@ namespace TestTask
         /// <param name="charType">Тип букв для анализа</param>
         private static void RemoveCharStatsByType(IList<LetterStats> letters, CharType charType)
         {
-            bool ContainsOnlyCharsFromSet(string str, HashSet<char> charSet)
-            {
-                int count = str.Count(c => charSet.Contains(c));
-                return count == str.Length;
-            }
-
             // TODO : Удалить статистику по запрошенному типу букв.
             IEnumerable<LetterStats> lettersRemove = null;
             switch (charType)
             {
                 case CharType.Consonants:
-                    lettersRemove = letters.Where(ls => ContainsOnlyCharsFromSet(ls.Letter, _consonantSet));
+                    lettersRemove = letters.Where(ls => Regex.IsMatch(ls.Letter, "[BCDFGHJKLMNPQRSTVWXYZbcdfghjklmnpqrstvwxyz]"));
                     break;
                 case CharType.Vowel:
-                    lettersRemove = letters.Where(ls => ContainsOnlyCharsFromSet(ls.Letter, _vowelSet));
+                    lettersRemove = letters.Where(ls => Regex.IsMatch(ls.Letter, "[AEIOUaeiou]"));
                     break;
             }
             if (lettersRemove != null)

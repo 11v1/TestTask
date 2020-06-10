@@ -55,6 +55,9 @@ namespace TestTask
             CheckEof();
         }
 
+        /// <summary>
+        /// Проверяет достигнут ли конец потока
+        /// </summary>
         private void CheckEof()
         {
             if (IsEof)
